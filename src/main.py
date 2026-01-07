@@ -14,6 +14,7 @@ r = colorama.Fore.RED
 b = colorama.Fore.BLUE
 c = colorama.Fore.CYAN
 m = colorama.Fore.MAGENTA
+y = colorama.Fore.YELLOW
 # ===================================
 
 logs_enabled = True
@@ -287,13 +288,15 @@ def main():
     log(_("done"), "INFO", g)
 
     # Undo
-    choice = input(_("undo")).lower()
-    if choice == "y":
+    if input(_("undo")).lower() == "y":
         for nouveau, ancien in historique:
-            shutil.move(str(nouveau), ancien)
+            if not nouveau.exists():
+                log(f"{_('missing_file')} {nouveau}", "WARN", y)
+                continue
+            shutil.move(nouveau, ancien)
+
         remove_empty_folders(dossiers_crees)
-        log(_("cancelled"), "INFO", g)
-        print(f"{g}{_('cancelled')}")
+        log("Rollback finished", "INFO", g)
 
 if __name__ == "__main__":
     main()
